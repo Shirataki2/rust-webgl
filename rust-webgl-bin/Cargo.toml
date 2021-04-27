@@ -1,0 +1,22 @@
+[package]
+name = "rust-webgl-bin"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+glow = "0.9.0"
+
+rust-webgl-lib = { path = "../rust-webgl-lib" }
+
+[target.'cfg(not(any(target_arch = "wasm32")))'.dependencies]
+sdl2 = { version = "0.34" }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+web-sys = { version = "0.3", features=["HtmlCanvasElement", "WebGl2RenderingContext", "Window", "Document", "Element", "HtmlElement", "Node",] }
+wasm-bindgen = { version = "0.2" }
+lazy_static = "1.4.0"

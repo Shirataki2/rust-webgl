@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+  </head>
+  <body>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <script type="module" src="./rust_webgl_bin.js"></script>
+    <script type="module">
+      import init from "./rust_webgl_bin.js";
+      import { run } from "./rust_webgl_bin.js";
+      await init();
+      run();
+    </script>
+  </body>
+</html>
