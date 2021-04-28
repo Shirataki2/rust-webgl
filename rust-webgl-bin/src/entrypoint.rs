@@ -1,12 +1,15 @@
 use glow::*;
-use rust_webgl_lib::context::Context;
+use rust_webgl_lib::application::Application;
 
-pub fn setup(ctx: &Context, gl: &glow::Context) {
+pub fn setup(app: &Application) {
+    let gl = app.get_context();
     unsafe {
         let vertex_array = gl
             .create_vertex_array()
             .expect("Cannot create vertex array");
         gl.bind_vertex_array(Some(vertex_array));
+
+        gl.enable(MULTISAMPLE);
 
         let program = gl.create_program().expect("Cannot create program");
 
@@ -40,7 +43,7 @@ pub fn setup(ctx: &Context, gl: &glow::Context) {
             let shader = gl
                 .create_shader(*shader_type)
                 .expect("Cannot create shader");
-            gl.shader_source(shader, &format!("{}\n{}", ctx.get_version(), shader_source));
+            gl.shader_source(shader, &format!("{}\n{}", app.get_version(), shader_source));
             gl.compile_shader(shader);
             if !gl.get_shader_compile_status(shader) {
                 panic!("{}", gl.get_shader_info_log(shader));
@@ -64,7 +67,8 @@ pub fn setup(ctx: &Context, gl: &glow::Context) {
     }
 }
 
-pub fn draw(_ctx: &Context, gl: &glow::Context) {
+pub fn draw(app: &Application) {
+    let gl = app.get_context();
     unsafe {
         gl.clear(COLOR_BUFFER_BIT);
         gl.draw_arrays(TRIANGLES, 0, 3);

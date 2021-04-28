@@ -1,8 +1,8 @@
 pub mod entrypoint;
 #[cfg(target_arch = "wasm32")]
-use crate::entrypoint::{draw as inner_draw, setup as inner_setup};
+use crate::entrypoint::{draw, setup};
 #[cfg(target_arch = "wasm32")]
-use rust_webgl_lib::context::Context;
+use rust_webgl_lib::application::Application;
 #[cfg(target_arch = "wasm32")]
 use std::{cell::RefCell, rc::Rc};
 #[cfg(target_arch = "wasm32")]
@@ -23,18 +23,14 @@ fn request_animation_frame(f: &Closure<dyn FnMut()>) {
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub fn run() -> Result<(), JsValue> {
-    let ctx = Context::default();
-    {
-        let gl = ctx.get_context();
-        inner_setup(&ctx, gl);
-    }
+    let app = Application::default();
+    setup(&app);
 
     let f = Rc::new(RefCell::new(None));
     let g = f.clone();
 
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
-        let gl = ctx.get_context();
-        inner_draw(&ctx, gl);
+        draw(&app);
 
         request_animation_frame(f.borrow().as_ref().unwrap());
     }) as Box<dyn FnMut()>));

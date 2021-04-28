@@ -1,13 +1,13 @@
 use glow::Context as InnerContext;
 #[cfg(not(target_arch = "wasm32"))]
-use sdl2::{EventPump, video::{Window, GLContext}};
+use sdl2::{
+    video::{GLContext, Window},
+    EventPump,
+};
 #[cfg(target_arch = "wasm32")]
 use wasm_bindgen::JsCast;
 
-
-
-
-pub struct Context {
+pub struct Application {
     inner: InnerContext,
     version: String,
     #[cfg(not(target_arch = "wasm32"))]
@@ -18,13 +18,13 @@ pub struct Context {
     gl_context: GLContext,
 }
 
-impl Default for Context {
-    fn default() -> Context {
-        Context::new()
+impl Default for Application {
+    fn default() -> Application {
+        Application::new()
     }
 }
 
-impl Context {
+impl Application {
     #[cfg(target_arch = "wasm32")]
     pub fn new() -> Context {
         let (inner, version) = Self::create_context();
@@ -52,10 +52,14 @@ impl Context {
     }
 
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn new() -> Context {
+    pub fn new() -> Application {
         let (inner, version, window, event_loop, gl_context) = Self::create_context();
-        Context {
-            inner, version, window, event_loop, gl_context
+        Application {
+            inner,
+            version,
+            window,
+            event_loop,
+            gl_context,
         }
     }
 
@@ -73,10 +77,17 @@ impl Context {
             .build()
             .unwrap();
         let gl_context = window.gl_create_context().unwrap();
-        let gl =
-            unsafe { glow::Context::from_loader_function(|s| video.gl_get_proc_address(s) as *const _) };
+        let gl = unsafe {
+            glow::Context::from_loader_function(|s| video.gl_get_proc_address(s) as *const _)
+        };
         let event_loop = sdl.event_pump().unwrap();
-        (gl, "#version 410".to_string(), window, event_loop, gl_context)
+        (
+            gl,
+            "#version 410".to_string(),
+            window,
+            event_loop,
+            gl_context,
+        )
     }
 
     pub fn get_context(&self) -> &InnerContext {
